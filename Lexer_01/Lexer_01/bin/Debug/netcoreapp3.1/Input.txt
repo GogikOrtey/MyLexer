@@ -1,0 +1,9 @@
+defun int qproc (int A, float B) {
+    int D, E;
+    E = A / round(B);
+    if (E > 5) {
+        int m = 1;
+        print D;
+    }
+    return 1;
+}
