@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Рабочий стол\\Учёба 3й курс 2023\\ТЯПИК\\Пишем лексер\\Lexer_01\\Lexer_01\\Lexer_01.csproj",
+      "projectUniqueName": "D:\\Рабочий стол\\Учёба 3й курс 2023\\ТЯПИК\\2 Пишем лексер для Rust\\Lexer_01\\Lexer_01\\Lexer_01.csproj",
       "projectName": "Lexer_01",
-      "projectPath": "D:\\Рабочий стол\\Учёба 3й курс 2023\\ТЯПИК\\Пишем лексер\\Lexer_01\\Lexer_01\\Lexer_01.csproj",
+      "projectPath": "D:\\Рабочий стол\\Учёба 3й курс 2023\\ТЯПИК\\2 Пишем лексер для Rust\\Lexer_01\\Lexer_01\\Lexer_01.csproj",
       "packagesPath": "C:\\Users\\gogor\\.nuget\\packages\\",
-      "outputPath": "D:\\Рабочий стол\\Учёба 3й курс 2023\\ТЯПИК\\Пишем лексер\\Lexer_01\\Lexer_01\\obj\\",
+      "outputPath": "D:\\Рабочий стол\\Учёба 3й курс 2023\\ТЯПИК\\2 Пишем лексер для Rust\\Lexer_01\\Lexer_01\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\gogor\\AppData\\Roaming\\NuGet\\NuGet.Config",

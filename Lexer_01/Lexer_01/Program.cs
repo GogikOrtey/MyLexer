@@ -5,11 +5,12 @@ using System.Diagnostics;
 
 namespace Lexer_01
 {
-    // Программа: Лексер
-    // Назначение: Разбивает входящий файл на лексемы
-    // Версия: 1.0 от 02.03.2023
+    // Программа: Лексер для языка Rust
+    // Назначение: Разбивает входящий файл на языке Rust, на лексемы
+    // Версия: 2.1 от 01.04.2023
     // Автор: Gogik Ortey
 
+    
     class Program
     {
         #region MyPrint
@@ -51,45 +52,181 @@ namespace Lexer_01
             public List<string> outpTable = new List<string>();
             // Массив, хранящий таблицу, которую мы выводим в конце работы программы
 
-            // Словарь для хранения лексем, и их поиска
-            Dictionary<string, string> dickOfLex = new Dictionary<string, string>
-            {
-                {"if", "IF"},
-                {"defun", "DEF"},
-                {"int", "INT"},
-                {"float", "FLOAT"},
-                {"return", "RET"},
+            /*
+                Тут три словаря
+                
+                В первом - храняться whitespace слова. Это такие лексемы, которые должны начинаться с пробела, и заканчиваться пробелом, иначе их смысл теряется
+                Например: while true
+                
+                Во втором - лексемы, которые могут находиться внутри строки, не огражадаемые пробелами, и это не утрачивает их смысл
+                Например: a+=10^2;
 
-                {"print", "RESERVED_NAME"},
-                {"round", "RESERVED_NAME"},
+                В третьем - символы, между которыми процедура подготовки расставит пробелы, для лучшего распознавания
+                Например, строка из файла "let n=5;" превращается в "let n = 5 ; "
+            */
+
+            // Словарь для хранения whitespace лексем, и их поиска
+            Dictionary<string, string> dickOfLex_01 = new Dictionary<string, string>
+            {             
+                // Ключевые слова, которые должны встречаться между пробелами
+
+                {"as", "AS"},               // Используется для явного приведения типов
+                {"break", "BREAK"},         // Прерывает выполнение цикла
+                {"const", "CONST"},         // Определяет константу
+                {"continue", "CONTINUE"},   // Переходит к следующей итерации цикла
+                {"crate", "CRATE"},         // Используется для обозначения текущего крейта (пакета)
+                {"else", "ELSE"},           // Определяет блок кода, который должен выполниться в случае, если условие не истинно
+                {"enum", "ENUM"},           // Определяет перечисление
+                {"extern", "EXTERN"},       // Указывает на то, что функция или переменная определены в другом модуле
+                {"false", "FALSE"},         // Булевое значение, которое обозначает ложь
+                {"fn", "FUNCTION"},         // Определяет функцию
+                {"for", "FOR"},             // Начинает цикл по итератору
+                {"if", "IF"},               // Определяет блок кода, который должен выполниться в случае, если условие истинно
+                {"impl", "IMPL"},           // Определяет реализацию типажа (trait) для типа
+                {"in", "IN"},               // Используется в циклах для обхода итераторов
+                {"let", "LET"},             // Определяет переменную
+                {"loop", "LOOP"},           // Начинает бесконечный цикл
+                {"match", "MATCH"},         // Используется для сопоставления значения с шаблоном
+                {"mod", "MOD"},             // Определяет модуль
+                {"move", "MOVE"},           // Используется для перемещения владения значения
+                {"mut", "MUT"},             // Позволяет изменять значение переменной
+                {"pub", "PUB"},             // Делает элемент публичным
+                {"ref", "REF"},             // Создает ссылку на значение
+                {"return", "RETURN"},       // Возвращает значение из функции
+                {"self", "SELF"},           // Ссылка на текущий тип или модуль
+                {"static", "STATIC"},       // Определяет статическую переменную
+                {"struct", "STRUCT"},       // Определяет структуру
+                {"super", "SUPER"},         // Ссылка на родительский модуль
+                {"trait", "TRAIT"},         // Определяет типаж
+                {"true", "TRUE"},           // Булевое значение, которое обозначает истину
+                {"type", "TYPE"},           // Определяет новый тип
+                {"unsafe", "UNSAFE"},       // Используется для написания небезопасного кода
+                {"use", "USE"},             // Импортирует элементы из модуля
+                {"where", "WHERE"},         // Используется для ограничения типов
+                {"while", "WHILE"},         // Начинает цикл, который выполняется, пока условие истинно
+
+                {"main", "MAIN"},
+                {"println!", "RESERVED_NAME"},
+            };
+
+            // Словарь для хранения литерных лексем
+            Dictionary<string, string> dickOfCont = new Dictionary<string, string>
+            {
+                {"{", "START_VOID"},
+                {"}", "END_VOID"},
+
+                {"()", "NULL_ARGUMENT"},
+                {"(", "OPEN_BRACKET"},
+                {")", "CLOSED_BRACKET"},
+
+                {"[", "OPEN_SQUEA_BRACKET"},
+                {"]", "CLOSED_SQUEA_BRACKET"},
+
+                {"\"", "DOUBLE_QUOTAT"},
+                {"'", "ONCE_QUOTAT"},
+
+                {"->", "RETURN_TYPE"},
+                {"=>", "PATTERM_MATCH"},
+
+                {".", "DOT"},
+                {",", "COMMA"},
+                {":", "COLON"},
+                {";", "END_LINE"},
+
+                {"_", "NEW_PATTERM"},
+
+                {"::", "INSIDE_LINK"},
+                //{"//", "Удалили какой-то наверно очень важный комментарий :)"},
+
+                {"+", "ARITHMETIC_OPERATION__ADD"},
+                {"-", "ARITHMETIC_OPERATION__SUB"},
+                {"*", "ARITHMETIC_OPERATION__MULT"},
+                {"/", "ARITHMETIC_OPERATION__DIV"},
+                {"%", "ARITHMETIC_OPERATION__REM_DIV"},
+                
+                {"==", "COMPARISON_OPERATION__EQUAL"},
+                {"!=", "COMPARISON_OPERATION__INEQUAL"},
+                {"<", "COMPARISON_OPERATION__LESS"},
+                {">", "COMPARISON_OPERATION__GREAT"},
+                {"<=", "COMPARISON_OPERATION__LESS_EQ"},
+                {">=", "COMPARISON_OPERATION__GREAT_EQ"},
+                
+                {"&&", "LOGICAL_OPERATION__AND"},
+                {"||", "LOGICAL_OPERATION__OR"},
+                {"!", "LOGICAL_OPERATION__NOT"},                
+                
+                {"+=", "ASSIGNMENT_OPERATION__ADD_ASS"},
+                {"-=", "ASSIGNMENT_OPERATION__SUB_ASS"},
+                {"*=", "ASSIGNMENT_OPERATION__MUL_ASS"},
+                {"/=", "ASSIGNMENT_OPERATION__DIV_ASS"},
+                {"%=", "ASSIGNMENT_OPERATION__REM_ASS"},
+                {"=", "ASSIGNMENT_OPERATION__SET"},
+
+                {"&", "BITWISE_OPERATION__AND"},
+                {"|", "BITWISE_OPERATION__OR"},
+                {"^", "BITWISE_OPERATION__XOR"},
+                {"<<", "BITWISE_OPERATION__SHL"},
+                {">>", "BITWISE_OPERATION__SHR"},
+            };
+
+            // Словарь символов, между которыми мы ставим пробелы
+            Dictionary<string, string> dickOfCont_2 = new Dictionary<string, string>
+            {
+                // Важное условие: тут не должно быть символов, которые являются частью других ключей
+                // Например, тут не должно быть символа :, если мы хотим разделить лексему ::
 
                 {"{", "START_VOID"},
                 {"}", "END_VOID"},
 
-                {"(", "START_ARGUMENT"},
-                {")", "END_ARGUMENT"},
+                {"(", "OPEN_BRACKET"},
+                {")", "CLOSED_BRACKET"},
+
+                {"[", "OPEN_SQUEA_BRACKET"},
+                {"]", "CLOSED_SQUEA_BRACKET"},
+
+                //{"\"", "DOUBLE_QUOTAT"},
+                //{"'", "ONCE_QUOTAT"},
 
                 {".", "DOT"},
                 {",", "COMMA"},
                 {";", "END_LINE"},
+                {"->", "RETURN_TYPE"},
+                {"=>", "PATTERM_MATCH"},
 
-                {"=", "EQUALLY"},
+                {"::", "INSIDE_LINK"},
 
-                {"+", "OPERATION_TOKEN"},
-                {"-", "OPERATION_TOKEN"},
-                {"*", "OPERATION_TOKEN"},
-                {"/", "OPERATION_TOKEN"},
+                {"==", "COMPARISON_OPERATION__EQUAL"},
+                {"!=", "COMPARISON_OPERATION__INEQUAL"},
+                //{"<", "COMPARISON_OPERATION__LESS"},
+                //{">", "COMPARISON_OPERATION__GREAT"},
+                {"<=", "COMPARISON_OPERATION__LESS_EQ"},
+                {">=", "COMPARISON_OPERATION__GREAT_EQ"},
 
-                {"!", "LOGIC_TOKEN"},
-                {"&", "LOGIC_TOKEN"},
-                {"|", "LOGIC_TOKEN"},
-                {">", "LOGIC_TOKEN"},
-                {"<", "LOGIC_TOKEN"}
+                {"&&", "LOGICAL_OPERATION__AND"},
+                {"||", "LOGICAL_OPERATION__OR"},
 
-            };  // Вот тут их можно развернуть
+                {"+", "ARITHMETIC_OPERATION__ADD"},
+                {"-", "ARITHMETIC_OPERATION__SUB"},
+                {"*", "ARITHMETIC_OPERATION__MULT"},
+                {"%", "ARITHMETIC_OPERATION__REM_DIV"},
+
+                // {"+=", "ASSIGNMENT_OPERATION__ADD_ASS"}, // Эти операци следует исключить из возможностей парсера, для стаибльности
+                // {"-=", "ASSIGNMENT_OPERATION__SUB_ASS"},
+                // {"*=", "ASSIGNMENT_OPERATION__MUL_ASS"},
+                // {"/=", "ASSIGNMENT_OPERATION__DIV_ASS"},
+                // {"%=", "ASSIGNMENT_OPERATION__REM_ASS"},
+
+                //{"=", "ASSIGNMENT_OPERATION__SET"},
+
+                //{"&", "BITWISE_OPERATION__AND"},
+                //{"|", "BITWISE_OPERATION__OR"},
+                {"^", "BITWISE_OPERATION__XOR"},
+                {"<<", "BITWISE_OPERATION__SHL"},
+                {">>", "BITWISE_OPERATION__SHR"},
+            };
 
             // Метод чтения строк из входного файла
-            public bool OpenInputFiles(string nameInputFile)
+            public void OpenInputFiles(string nameInputFile)
             {
                 if (nameInputFile == "") nameInputFile = InputNameFile; // Имя файла можно не указывать, при вызове этой процедуры
 
@@ -103,44 +240,177 @@ namespace Lexer_01
                             //Console.WriteLine(currentLine);
                             InputLine.Add(currentLine); // И построчно добавляет в двумерный лист
                         }
-
-                        improvingFileReadability(); // Улучшает входной файл
-                        OutOfInputFile(); // Выводит весь файл в консоль
                     }
-                    return true;
+                    //return true;
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("The file could not be read:");
                     Console.WriteLine(e.Message);
-                    return false;
+                    //return false;
                 }
+
+                OutOfInputFile(); // Выводит весь файл в консоль
+                improvingFileReadability_v2(); // Улучшает входной файл                        
+                //OutOfInputFile(); // Выводит изменённый файл в консоль // Раскомментируйте эту строку, что бы посмотреть промежуточный результат
             }
 
-            // Улучшение читаемости файла, путём вставления пробелов между любыми скобками
-            public void improvingFileReadability()
+            public List<int> indForQuoat = new List<int>();
+
+            // В этой процедуре мы ставим пробелы до и после всех служебных символов. Это улучшает распознавание токенов
+            // Все служебные символы описаны в словаре dickOfCont_2
+            // Например, строка из файла "let n=5;" превращается в "let n = 5 ; "
+            public void improvingFileReadability_v2()
             {
+                /*
+                    Короче, тут мы действуем так:
+                    
+                    1) Проходим по каждой строке входного файла
+                    2) Цикл while работает до тех пор, пока мы не внесли все требуемые изменения
+                    3) В foreach мы проходим по каждому элементу словаря dickOfCont_2
+                    4) Для каждого такого элемента мы выполняем поиск в строке
+                        • Если поиск успешен - мы ставим пробелы между найденными символами
+                        • А также запоминаем индекс этого символа, и дальше продолжаем поиск не с начала строки, а с этого индекса
+
+                */
+
                 for (int i = 0; i < InputLine.Count; i++)
                 {
-                    for (int j = 0; j < InputLine[i].Length; j++)
+                    // Флаг, указывающий, были ли выполнены изменения в строке
+                    bool changesMade = true;
+                    int countWh = 0;
+
+                    // Пока производятся изменения в строке, продолжаем поиск
+                    while (changesMade)
                     {
-                        if ((InputLine[i][j] == '(') || (InputLine[i][j] == ')'))
+                        // Сброс флага изменений
+                        changesMade = false;
+                        countWh++;
+
+                        // Проход по каждой подстроке в словаре и вставка пробелов
+                        foreach (KeyValuePair<string, string> entry in dickOfCont_2)
                         {
-                            //print("Нашли скобку в " + i + "-й строке на " + j + "-м месте");
+                            int indd = -1;
 
-                            InputLine[i] = InputLine[i].Insert(j, " ");
-                            InputLine[i] = InputLine[i].Insert(j+2, " ");
+                            // Тут мы игнорируем распознавание символов и вставку пробелов между ними, в строках
+                            // Например, строка из фходного файла:  let my_string = "Привет, мир!".to_string();
+                            // Будет преобразована в строку:        let my_string = "Привет, мир!" . to_string ( ) ;
+                            // Игнорируя символы , и ! в строке.
+                            // Также этот кусок кода работает с произвольным количеством строк в исходной строке
+                            {
+                                bool searchQuoatIsEneble = true;
+                                indForQuoat = new List<int>();
 
-                            j += 2;
+                                while (searchQuoatIsEneble)
+                                {
+                                    int firstIndex = -1;
+                                    int secondIndex = -1;
+                                    int trithIndex = -1;
+
+                                    if (indForQuoat.Count == 0) firstIndex = InputLine[i].IndexOf("\"");
+                                    else firstIndex = InputLine[i].IndexOf("\"", indForQuoat[indForQuoat.Count - 1]);
+
+                                    if (firstIndex != -1)
+                                    {
+                                        secondIndex = InputLine[i].IndexOf("\"", firstIndex + 1);
+                                    }
+
+                                    if (secondIndex != -1)
+                                    {
+                                        trithIndex = InputLine[i].IndexOf("\"", secondIndex + 1);
+
+                                        indForQuoat.Add(firstIndex);
+                                        indForQuoat.Add(secondIndex);
+                                    }
+
+                                    if (trithIndex == -1)
+                                    {
+                                        searchQuoatIsEneble = false;
+                                    }
+                                }
+                            }
+
+
+                            for (int u = 0; u < 1; u++)
+                            {
+                                string substring = entry.Key;
+                                int index = InputLine[i].IndexOf(substring, indd+1);
+
+                                if (index != -1)
+                                {
+                                    /*
+                                        Примеры, как окружение может располагаться, если мы распознаём лексему ::
+
+                                        __::__
+                                        ::____
+                                        ____::
+                                        _ ::__
+                                        __:: _
+                                    */
+
+                                    bool isOk = true;
+
+                                    for (int p = 0; p < indForQuoat.Count; p++)
+                                    {
+                                        if ((index >= indForQuoat[p]) && (index <= indForQuoat[p+1]))
+                                        {
+                                            isOk = false;
+                                            //print(InputLine[i] + "\nindex " + index + " >= " + indForQuoat[p] + " или index <= " +
+                                            // + indForQuoat[p + 1] + ", блокируем проверку токена " + entry.Key);
+                                        }
+
+                                        p++;
+                                    }
+
+                                    if (isOk == true)
+                                    {
+                                        // Проверка, что перед и после подстроки нет пробелов
+                                        if ((index == 0 || InputLine[i][index - 1] != ' ') &&
+                                            (index + substring.Length == InputLine[i].Length || InputLine[i][index + substring.Length] != ' '))
+                                        {
+                                            // Вставка пробелов перед и после подстроки
+                                            InputLine[i] = InputLine[i].Insert(index, " ");
+                                            InputLine[i] = InputLine[i].Insert(index + substring.Length + 1, " ");
+                                            // Установка флага изменений
+                                            changesMade = true;
+                                        }
+                                        else if ((index != 0) && (InputLine[i][index - 1] != ' ') &&
+                                            (index + substring.Length < InputLine[i].Length && InputLine[i][index + substring.Length] == ' ')) // __:: _
+                                        {
+                                            InputLine[i] = InputLine[i].Insert(index, " ");
+                                            changesMade = true;
+                                        }
+                                        else if ((index != 0) && (InputLine[i][index - 1] == ' ') &&
+                                            (index + substring.Length < InputLine[i].Length && InputLine[i][index + substring.Length] != ' ')) // _ ::__
+                                        {
+                                            InputLine[i] = InputLine[i].Insert(index + substring.Length, " ");
+                                            changesMade = true;
+                                        }
+
+                                        int buf = index;
+                                        if (indd != index)
+                                        {
+                                            index = indd;
+                                            indd = buf;
+                                            u--;
+                                        }
+
+                                        //print(InputLine[i]);   
+                                    }
+                                }
+                            }
                         }
                     }
-                }
+
+                    //print("countWh = " + countWh);
+                    //print("");
+                }                
             }
 
             // Выводим весь массив строк, считанный из входного файла
             public void OutOfInputFile()
             {
-                print("Входной файл:");
+                print("\nВходной файл:");
 
                 if (InputLine.Count != 0)
                     InputLine.ForEach(Console.WriteLine);
@@ -168,10 +438,11 @@ namespace Lexer_01
             */
 
             // Нерекурсивная процедура поиска в массиве
-            public string SearchOfDick(string inp)
+            public string SearchOfDick(string inp) // Dictionary - словарь, сокр. - dick
             {
                 string res = null;
-                dickOfLex.TryGetValue(inp, out res); // Ищем элемент по ключу inp. В случае успеха, найденное значение положится в переменную res
+                //dickOfLex.TryGetValue(inp, out res); // Ищем элемент по ключу inp. В случае успеха, найденное значение положится в переменную res
+                dickOfCont.TryGetValue(inp, out res);
                 return res;
             }
 
@@ -181,55 +452,57 @@ namespace Lexer_01
             public string SearchOfDickOnRecurs(string inp) 
             {
                 string res = null;
-                dickOfLex.TryGetValue(inp, out res); // Ищем в массиве по ключу
+                dickOfLex_01.TryGetValue(inp, out res); // Ищем в массиве по ключу
+                if (res == null) dickOfCont.TryGetValue(inp, out res);
 
                 if (res == null) // Если не нашли
                 {
                     string newInp = "";
 
                     // Обяснение, что тут за сложный код:
+                    {
+                        /*
+                            Тут я реализовал алгоритм уменьшения строки. Т.е., если мы не смогли найти лексему в массиве при поиске,
+                            это не означает, что в строке её нет. Их там может быть, кстати, много
 
-                    /*
-                        Тут я реализовал алгоритм уменьшения строки. Т.е., если мы не смогли найти лексему в массиве при поиске,
-                        это не означает, что в строке её нет. Их там может быть, кстати, много
+                            Например, нас попалась такая строка: "(int("
 
-                        Например, нас попалась такая строка: "(int("
+                            Ниже, в первом for я посимвольно создаю новую строку, с левого конца
+                            Вот так это выглядит:
 
-                        Ниже, в первом for я посимвольно создаю новую строку, с левого конца
-                        Вот так это выглядит:
+                            i = 1: "("
+                            i = 2: "(i"
+                            i = 3: "(in"
+                            ...
 
-                        i = 1: "("
-                        i = 2: "(i"
-                        i = 3: "(in"
-                        ...
+                            Далее, я на каждом шаге запускаю процедуру нерекурсивного поиска. Например, мы нашли лексему "(", при i = 1.
+                            Тогда, я отправляю её в начало очереди буферных лексем
 
-                        Далее, я на каждом шаге запускаю процедуру нерекурсивного поиска. Например, мы нашли лексему "(", при i = 1.
-                        Тогда, я отправляю её в начало очереди буферных лексем
+                            Это сделано потомучто по другому не сделать
 
-                        Это сделано потомучто по другому не сделать
+                            Далее, я создаю новую строку, без тех символов, которые я опознал. В этом примере она будет выглядеть так: "int("
+                            И запускаю эту рекурсивную процедуру ещё раз, уже с этой новой строкой
 
-                        Далее, я создаю новую строку, без тех символов, которые я опознал. В этом примере она будет выглядеть так: "int("
-                        И запускаю эту рекурсивную процедуру ещё раз, уже с этой новой строкой
+                            ---
 
-                        ---
+                            Понятно, что строку "int(" не получится идентефицировать, если брать символы слева
+                            И логично будет пойти с другой строрны - справа
 
-                        Понятно, что строку "int(" не получится идентефицировать, если брать символы слева
-                        И логично будет пойти с другой строрны - справа
+                            Этим как раз и занимается второй for ниже
+                            Вот так будет выглядеть его работа:
 
-                        Этим как раз и занимается второй for ниже
-                        Вот так будет выглядеть его работа:
+                            i = 1: "("
+                            i = 2: "t("
+                            i = 3: "nt("
+                            i = 4: "int("
+                            ...
 
-                        i = 1: "("
-                        i = 2: "t("
-                        i = 3: "nt("
-                        i = 4: "int("
-                        ...
+                            Он опознает скобку, уже на первом шаге, и дальше строка "int" снова уйдёт в рекурсию, и верно идентефицируется.
 
-                        Он опознает скобку, уже на первом шаге, и дальше строка "int" снова уйдёт в рекурсию, и верно идентефицируется.
-
-                        В принципе это всё, что нужно знать, для понимания
-                    */
-
+                            В принципе это всё, что нужно знать, для понимания
+                        */
+                    }
+                    
                     for (int i = 1; i < inp.Length; i++)
                     {
                         newInp = new String(inp.ToCharArray(), 0, i);
@@ -322,20 +595,62 @@ namespace Lexer_01
                         char currentChar = InputLine[i][0];
                         string bufer = "";
 
+                        bool isString = false;
+
                         for (int j = 0; j < InputLine[i].Length; j++)
                         {
-                            if ((InputLine[i][j] != ' ') && (InputLine[i][j] != '	'))
+                            int index = InputLine[i].IndexOf("//"); // Находим индекс первого вхождения "//" в строке
+                            if (index >= 0) // Если нашлось вхождение "//" в строке
                             {
-                                bufer += InputLine[i][j];
+                                InputLine[i] = InputLine[i].Substring(0, index); // Удаляем все символы, которые следуют за "//", вместе с этим символом
+                                continue;
+                            }
+
+                            if (InputLine[i][j] == '"')
+                            {
+                                if (isString == false)
+                                {
+                                    if (bufer.Length > 0)
+                                    {
+                                        tokenDetection(bufer);
+                                        //print(bufer);
+                                        bufer = "";
+                                    }
+
+                                    isString = true;
+                                }
+                                else
+                                {
+                                    isString = false;
+
+                                    outpTable.Add(bufer + "\"");
+                                    outpTable.Add("STRING");
+                                    //print("123");
+
+                                    bufer = "";
+                                    continue;
+                                }
+                            }
+
+                            if (isString == false)
+                            {
+                                if ((InputLine[i][j] != ' ') && (InputLine[i][j] != '	'))
+                                {
+                                    bufer += InputLine[i][j];
+                                }
+                                else
+                                {
+                                    if (bufer.Length > 0)
+                                    {
+                                        tokenDetection(bufer);
+                                        //print(bufer);
+                                        bufer = "";
+                                    }
+                                }
                             }
                             else
                             {
-                                if (bufer.Length > 0)
-                                {
-                                    tokenDetection(bufer);
-                                    //print(bufer);
-                                    bufer = "";
-                                }
+                                bufer += InputLine[i][j];
                             }
                         }
                         if(bufer.Length>0) tokenDetection(bufer);
@@ -415,6 +730,7 @@ namespace Lexer_01
             public int maxLengthFexem = 0;   // Максимальная длинна распознанных лексем 
 
             // Находит самое длинное название лексемы
+            /*
             public int get_maxLengthFexem()
             {
                 if (maxLengthFexem != 0) return maxLengthFexem;
@@ -430,17 +746,18 @@ namespace Lexer_01
                     }
                 }
 
-                // Кончено, можно было и эффективнее это сделать, но я не захотел заморачиваться.
-
                 return maxLengthFexem;
             }
+            */
 
             // Печатает финальную таблицу с распознанными лексемами
             public void printFinalTable()
             {
                 print("\nВсе распознанные лексемы: \n");
 
-                get_maxLengthFexem();
+                //get_maxLengthFexem();
+
+                maxLengthFexem = 10;
 
                 for (int i = 0; i < outpTable.Count; i += 2)
                 {
@@ -448,13 +765,23 @@ namespace Lexer_01
 
                     println(i / 2);
 
-                    if ((i/2 < 10) && (outpTable.Count < 100)) println(" ");
-                    else if ((i/2 < 10) && (outpTable.Count < 100)) println("  ");
-                    else if ((i/2 < 100) && (outpTable.Count > 100)) println(" ");
+                    if (outpTable.Count < 100)
+                    {
+                        if ((i / 2 < 10)) println(" ");
+                        else println("  ");
+                    }
+                    else
+                    {
+                        if ((i / 2 < 10)) println("  ");
+                        else if ((i / 2 < 100)) println(" ");
+                    }
 
                     println("  " + outpTable[i]);
 
                     int a_size = maxLengthFexem - outpTable[i].Length;
+
+                    if (a_size <= 0) a_size = 1;
+
                     string newSpase = new String(' ', a_size);
                     println(newSpase);
 

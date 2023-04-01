@@ -1,9 +1,15 @@
-defun int qproc (int A, float B) {
-    int D, E;
-    E = A / round(B);
-    if (E > 5) {
-        int m = 1;
-        print D;
+// Функция для вычисления факториала числа
+fn factorial(n: u64) -> u64 {
+    match n {
+        // Если n равно 0, то факториал равен 1
+        0 => 1,
+        // Иначе, умножаем n на факториал (n-1)
+        _ => n * factorial(n - 1),
     }
-    return 1;
+}
+
+fn main() {
+    // Вызываем функцию factorial для числа 5 и выводим результат в консоль
+    let n = 5;
+    println!("The factorial of {} is {}", n, factorial(n));
 }

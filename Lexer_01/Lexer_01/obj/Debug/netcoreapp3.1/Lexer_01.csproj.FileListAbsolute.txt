@@ -12,3 +12,17 @@ D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\Пишем л
 D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\Пишем лексер\Lexer_01\Lexer_01\obj\Debug\netcoreapp3.1\Lexer_01.dll
 D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\Пишем лексер\Lexer_01\Lexer_01\obj\Debug\netcoreapp3.1\Lexer_01.pdb
 D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\Пишем лексер\Lexer_01\Lexer_01\obj\Debug\netcoreapp3.1\Lexer_01.genruntimeconfig.cache
+D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\2 Пишем лексер для Rust\Lexer_01\Lexer_01\bin\Debug\netcoreapp3.1\Lexer_01.exe
+D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\2 Пишем лексер для Rust\Lexer_01\Lexer_01\bin\Debug\netcoreapp3.1\Lexer_01.deps.json
+D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\2 Пишем лексер для Rust\Lexer_01\Lexer_01\bin\Debug\netcoreapp3.1\Lexer_01.runtimeconfig.json
+D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\2 Пишем лексер для Rust\Lexer_01\Lexer_01\bin\Debug\netcoreapp3.1\Lexer_01.runtimeconfig.dev.json
+D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\2 Пишем лексер для Rust\Lexer_01\Lexer_01\bin\Debug\netcoreapp3.1\Lexer_01.dll
+D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\2 Пишем лексер для Rust\Lexer_01\Lexer_01\bin\Debug\netcoreapp3.1\Lexer_01.pdb
+D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\2 Пишем лексер для Rust\Lexer_01\Lexer_01\obj\Debug\netcoreapp3.1\Lexer_01.csproj.AssemblyReference.cache
+D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\2 Пишем лексер для Rust\Lexer_01\Lexer_01\obj\Debug\netcoreapp3.1\Lexer_01.GeneratedMSBuildEditorConfig.editorconfig
+D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\2 Пишем лексер для Rust\Lexer_01\Lexer_01\obj\Debug\netcoreapp3.1\Lexer_01.AssemblyInfoInputs.cache
+D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\2 Пишем лексер для Rust\Lexer_01\Lexer_01\obj\Debug\netcoreapp3.1\Lexer_01.AssemblyInfo.cs
+D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\2 Пишем лексер для Rust\Lexer_01\Lexer_01\obj\Debug\netcoreapp3.1\Lexer_01.csproj.CoreCompileInputs.cache
+D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\2 Пишем лексер для Rust\Lexer_01\Lexer_01\obj\Debug\netcoreapp3.1\Lexer_01.dll
+D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\2 Пишем лексер для Rust\Lexer_01\Lexer_01\obj\Debug\netcoreapp3.1\Lexer_01.pdb
+D:\Рабочий стол\Учёба 3й курс 2023\ТЯПИК\2 Пишем лексер для Rust\Lexer_01\Lexer_01\obj\Debug\netcoreapp3.1\Lexer_01.genruntimeconfig.cache
